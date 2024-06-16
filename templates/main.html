@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список задач</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_main.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="profile-info">
+                <img src="{{ url_for('static', filename='uploads/' + (current_user.avatar or 'default_avatar.png')) }}" alt="Avatar" class="avatar">
+                <span>{{ current_user.first_name }} {{ current_user.last_name }}</span>
+            </div>
+            <div class="actions">
+                <a href="{{ url_for('create_task') }}" class="btn">Создать</a>
+                <a href="{{ url_for('profile') }}" class="btn">Профиль</a>
+                <a href="{{ url_for('logout') }}" class="btn">Выйти</a>
+            </div>
+        </div>
+        <h1>Список задач</h1>
+        <div class="search-filter">
+            <input type="text" id="search" placeholder="Поиск" oninput="filterTasks()">
+            <select id="statusFilter" onchange="filterTasks()">
+                <option value="">Все статусы</option>
+                <option value="Назначена">Назначена</option>
+                <option value="В работе">В работе</option>
+                <option value="Приостановлена">Приостановлена</option>
+            </select>
+            <select id="categoryFilter" onchange="filterTasks()">
+                <option value="">Все категории</option>
+                <option value="Личное">Личное</option>
+                <option value="Работа">Работа</option>
+                <option value="Разное">Разное</option>
+            </select>
+            <select id="priorityFilter" onchange="filterTasks()">
+                <option value="">Все приоритеты</option>
+                <option value="Высокий">Высокий</option>
+                <option value="Средний">Средний</option>
+                <option value="Низкий">Низкий</option>
+            </select>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Статус</th>
+                    <th>Наименование</th>
+                    <th>Срок</th>
+                    <th>Приоритет</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody id="task_list">
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.deadline.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ task.priority }}</td>
+                    <td><a href="{{ url_for('task_detail', task_id=task.id) }}">Подробнее</a></td>
+                    <td class="hidden-category">{{ task.category }}</td> <!-- Скрытая категория -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function filterTasks() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+
+            const rows = document.querySelectorAll('#task_list tr');
+            rows.forEach(row => {
+                const title = row.cells[1].textContent.toLowerCase();
+                const status = row.cells[0].textContent;
+                const category = row.querySelector('.hidden-category').textContent;
+                const priority = row.cells[3].textContent;
+
+                const matchesSearch = title.includes(search);
+                const matchesStatus = !statusFilter || status === statusFilter;
+                const matchesCategory = !categoryFilter || category === categoryFilter;
+                const matchesPriority = !priorityFilter || priority === priorityFilter;
+
+                if (matchesSearch && matchesStatus && matchesCategory && matchesPriority) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

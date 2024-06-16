@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать задачу</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_create.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Создать задачу</h1>
+        <form action="/create_task" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title">Наименование:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="status">Статус:</label>
+                <select id="status" name="status" required>
+                    <option value="Назначена">Назначена</option>
+                    <option value="В работе">В работе</option>
+                    <option value="Приостановлена">Приостановлена</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Категория:</label>
+                <select id="category" name="category" required>
+                    <option value="Личное">Личное</option>
+                    <option value="Работа">Работа</option>
+                    <option value="Разное">Разное</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="priority">Приоритет:</label>
+                <select id="priority" name="priority" required>
+                    <option value="Высокий">Высокий</option>
+                    <option value="Средний">Средний</option>
+                    <option value="Низкий">Низкий</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="deadline">Срок:</label>
+                <input type="date" id="deadline" name="deadline" required>
+            </div>
+            <div class="form-group">
+                <label for="assigned_users">Назначить пользователям:</label>
+                <div id="assigned_users">
+                    {% for user in users %}
+                        {% if user.id != current_user_id %}
+                        <div class="user-option">
+                            <input type="checkbox" id="user_{{ user.id }}" name="assigned_users" value="{{ user.id }}">
+                            <label for="user_{{ user.id }}">
+                                <img src="{{ url_for('static', filename='uploads/' + (user.avatar or 'default_avatar.png')) }}" alt="Avatar" class="avatar-icon">
+                                {{ user.first_name }} {{ user.last_name }}
+                            </label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="file">Прикрепить файл:</label>
+                <input type="file" id="file" name="file">
+            </div>
+            <div class="buttons">
+                <button type="submit" class="submit-button">Создать</button>
+                <button type="button" class="back-button" onclick="window.location.href='/main'">Назад</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

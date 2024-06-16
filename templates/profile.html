@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_profile.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="back-button" onclick="window.location.href='/main'">Назад</button>
+            <button class="logout-button" onclick="window.location.href='/logout'">Выйти</button>
+        </header>
+        <div class="profile">
+            <div class="avatar-section">
+                <img src="{{ url_for('static', filename='uploads/' + (user.avatar or 'default_avatar.png')) }}" alt="Avatar" class="avatar">
+                <form action="/profile" method="post" enctype="multipart/form-data">
+                    <input type="file" name="avatar">
+                    <button type="submit" name="change_avatar" class="avatar-button">Изменить аватар</button>
+                </form>
+            </div>
+            <div class="details-section">
+                <form action="/profile" method="post">
+                    <div class="detail">
+                        <label for="first_name">Имя:</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" readonly>
+                        <button type="button" class="edit-button" onclick="enableEdit('first_name')">Редактировать</button>
+                    </div>
+                    <div class="detail">
+                        <label for="last_name">Фамилия:</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" readonly>
+                        <button type="button" class="edit-button" onclick="enableEdit('last_name')">Редактировать</button>
+                    </div>
+                    <div class="detail">
+                        <label for="login">Логин:</label>
+                        <input type="text" id="login" name="login" value="{{ user.login }}" readonly>
+                        <button type="button" class="edit-button" onclick="enableEdit('login')">Редактировать</button>
+                    </div>
+                    <div class="detail">
+                        <label for="password">Пароль:</label>
+                        <input type="password" id="password" name="password" value="********" readonly>
+                        <button type="button" class="edit-button" onclick="enableEdit('password')">Изменить</button>
+                    </div>
+                    <button type="submit" class="save-button">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function enableEdit(fieldId) {
+            document.getElementById(fieldId).readOnly = false;
+            document.getElementById(fieldId).focus();
+        }
+    </script>
+</body>
+</html>

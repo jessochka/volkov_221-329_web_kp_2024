@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Detail</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_detail.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Задача: {{ task.title }}</h1>
+        <form action="/task/{{ task.id }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title">Наименование:</label>
+                <input type="text" id="title" name="title" value="{{ task.title }}">
+            </div>
+            <div class="form-group">
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description">{{ task.description }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="status">Статус:</label>
+                <select id="status" name="status">
+                    <option value="Назначена" {% if task.status == 'Назначена' %}selected{% endif %}>Назначена</option>
+                    <option value="В работе" {% if task.status == 'В работе' %}selected{% endif %}>В работе</option>
+                    <option value="Приостановлена" {% if task.status == 'Приостановлена' %}selected{% endif %}>Приостановлена</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Категория:</label>
+                <select id="category" name="category">
+                    <option value="Личное" {% if task.category == 'Личное' %}selected{% endif %}>Личное</option>
+                    <option value="Работа" {% if task.category == 'Работа' %}selected{% endif %}>Работа</option>
+                    <option value="Разное" {% if task.category == 'Разное' %}selected{% endif %}>Разное</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="priority">Приоритет:</label>
+                <select id="priority" name="priority">
+                    <option value="Высокий" {% if task.priority == 'Высокий' %}selected{% endif %}>Высокий</option>
+                    <option value="Средний" {% if task.priority == 'Средний' %}selected{% endif %}>Средний</option>
+                    <option value="Низкий" {% if task.priority == 'Низкий' %}selected{% endif %}>Низкий</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="deadline">Срок:</label>
+                <input type="date" id="deadline" name="deadline" value="{{ task.deadline.strftime('%Y-%m-%d') }}">
+            </div>
+            <div class="form-group">
+                <label for="assigned_users">Назначить пользователям:</label>
+                <div id="assigned_users">
+                    {% for user in users %}
+                        <div class="user-option">
+                            <input type="checkbox" id="user_{{ user.id }}" name="assigned_users" value="{{ user.id }}" {% if user in task.assigned_users %}checked{% endif %} {% if user.id == task.user_id %}disabled{% endif %}>
+                            <label for="user_{{ user.id }}">
+                                <img src="{{ url_for('static', filename='uploads/' + (user.avatar or 'default_avatar.png')) }}" alt="Avatar" class="avatar-icon">
+                                {{ user.first_name }} {{ user.last_name }} {% if user.id == task.user_id %}<span class="creator-note">(создатель задачи)</span>{% endif %}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="file">Прикрепить файл:</label>
+                <input type="file" id="file" name="file">
+            </div>
+            <div class="form-group">
+                {% for file in task.files %}
+                <a href="{{ url_for('static', filename='uploads/' + file.filename) }}">{{ file.filename }}</a>
+                {% endfor %}
+            </div>
+            <button type="submit" name="edit" class="submit-button">Редактировать</button>
+            <button type="submit" name="delete" class="delete-button">Удалить</button>
+            <button type="button" class="back-button" onclick="window.location.href='/main'">Назад</button>
+        </form>
+    </div>
+</body>
+</html>
